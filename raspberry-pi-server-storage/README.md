@@ -20,7 +20,7 @@ git add .
 git commit -m "Initial commit - Los Nachos Launcher"
 
 # Ajouter le repository distant (créez d'abord un repo sur github.com)
-git remote add origin https://github.com/VOTRE_USERNAME/lunchermc.git
+git remote add origin https://github.com/Mathew3585/mc-mod.git
 
 # Pousser vers GitHub
 git push -u origin main
@@ -45,40 +45,39 @@ Ce serveur permet de :
 - Connexion internet
 - Git (généralement préinstallé sur Raspberry Pi OS)
 
-### Étape 1 : Cloner le repository
+### Étape 1 : Installer Git (si nécessaire)
 
-Connectez-vous au Raspberry Pi et clonez le repository GitHub :
+Si Git n'est pas installé sur votre Raspberry Pi :
 
 ```bash
 ssh pi@[IP_RASPBERRY]
-cd ~
-git clone https://github.com/VOTRE_USERNAME/lunchermc.git
-cd lunchermc/raspberry-pi-server-storage
-```
-
-> **Note** : Remplacez `VOTRE_USERNAME` par votre nom d'utilisateur GitHub où le projet est hébergé.
-
-**Méthode alternative (si Git n'est pas installé)** :
-
-```bash
-# Installer Git
 sudo apt-get update
 sudo apt-get install -y git
+git --version  # Vérifier l'installation
+```
 
-# Puis suivre les étapes ci-dessus
+### Étape 2 : Cloner le repository
+
+Clonez le repository GitHub :
+
+```bash
+cd ~
+git clone https://github.com/Mathew3585/mc-mod.git
+cd mc-mod/raspberry-pi-server-storage
 ```
 
 **Méthode alternative (téléchargement direct sans Git)** :
 
 ```bash
 cd ~
-wget https://github.com/VOTRE_USERNAME/lunchermc/archive/refs/heads/main.zip
+wget https://github.com/Mathew3585/mc-mod/archive/refs/heads/main.zip
+sudo apt-get install -y unzip  # Installer unzip si nécessaire
 unzip main.zip
-mv lunchermc-main lunchermc
-cd lunchermc/raspberry-pi-server-storage
+mv mc-mod-main mc-mod
+cd mc-mod/raspberry-pi-server-storage
 ```
 
-### Étape 2 : Installer
+### Étape 3 : Installer
 
 Exécutez le script d'installation :
 
@@ -172,7 +171,7 @@ sudo systemctl status minecraft-mods.service
 Éditez le fichier `.env` :
 
 ```bash
-nano ~/lunchermc/raspberry-pi-server-storage/.env
+nano ~/mc-mod/raspberry-pi-server-storage/.env
 ```
 
 Modifiez la ligne :
@@ -193,18 +192,18 @@ Si vous préférez utiliser la ligne de commande :
 
 ```bash
 # Copier un mod depuis votre PC
-scp mon-mod.jar pi@[IP_RASPBERRY]:~/lunchermc/raspberry-pi-server-storage/mods/
+scp mon-mod.jar pi@[IP_RASPBERRY]:~/mc-mod/raspberry-pi-server-storage/mods/
 
 # Régénérer le manifest
 ssh pi@[IP_RASPBERRY]
-cd ~/lunchermc/raspberry-pi-server-storage/server
+cd ~/mc-mod/raspberry-pi-server-storage/server
 python3 -c "import utils; utils.generate_manifest('../mods')"
 ```
 
 ## 📊 Structure des fichiers
 
 ```
-~/lunchermc/raspberry-pi-server-storage/
+~/mc-mod/raspberry-pi-server-storage/
 ├── .env                          # Configuration (mot de passe, etc.)
 ├── requirements.txt              # Dépendances Python
 ├── setup-server.sh               # Script d'installation
@@ -295,8 +294,8 @@ Dans le launcher :
 3. Vérifiez les logs du launcher
 
 Sur le serveur :
-1. Vérifiez que le manifest.json existe : `ls ~/lunchermc/raspberry-pi-server-storage/mods/manifest.json`
-2. Vérifiez le contenu : `cat ~/lunchermc/raspberry-pi-server-storage/mods/manifest.json`
+1. Vérifiez que le manifest.json existe : `ls ~/mc-mod/raspberry-pi-server-storage/mods/manifest.json`
+2. Vérifiez le contenu : `cat ~/mc-mod/raspberry-pi-server-storage/mods/manifest.json`
 
 ## 📝 Format du manifest.json
 
@@ -330,7 +329,7 @@ ssh pi@[IP_RASPBERRY]
 sudo systemctl stop minecraft-mods.service
 
 # Mettez à jour le repository
-cd ~/lunchermc
+cd ~/mc-mod
 git pull origin main
 
 # Redémarrez le service
@@ -341,7 +340,7 @@ sudo systemctl start minecraft-mods.service
 
 ```bash
 # Sauvegardez vos modifications
-cd ~/lunchermc
+cd ~/mc-mod
 git stash
 
 # Récupérez les dernières modifications
@@ -362,11 +361,11 @@ Sauvegardez régulièrement vos mods :
 
 ```bash
 # Depuis le Raspberry Pi
-cd ~/lunchermc/raspberry-pi-server-storage
+cd ~/mc-mod/raspberry-pi-server-storage
 tar -czf mods-backup-$(date +%Y%m%d).tar.gz mods/
 
 # Ou depuis votre PC
-scp -r pi@[IP_RASPBERRY]:~/lunchermc/raspberry-pi-server-storage/mods ./mods-backup/
+scp -r pi@[IP_RASPBERRY]:~/mc-mod/raspberry-pi-server-storage/mods ./mods-backup/
 ```
 
 ### Accès depuis plusieurs launchers

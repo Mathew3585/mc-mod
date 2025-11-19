@@ -20,8 +20,8 @@ fi
 echo "[1/7] Mise à jour du système..."
 sudo apt-get update -qq
 
-# Installer Python 3 et pip (normalement déjà installés sur Raspberry Pi OS)
-echo "[2/7] Vérification de Python 3..."
+# Installer Python 3 et pip
+echo "[2/7] Vérification de Python 3 et pip..."
 if ! command -v python3 &> /dev/null; then
     echo "Installation de Python 3..."
     sudo apt-get install -y python3 python3-pip
@@ -29,21 +29,28 @@ else
     echo "Python 3 est déjà installé"
 fi
 
+if ! command -v pip3 &> /dev/null; then
+    echo "Installation de pip3..."
+    sudo apt-get install -y python3-pip
+else
+    echo "pip3 est déjà installé"
+fi
+
 # Installer les dépendances Python
 echo "[3/7] Installation des dépendances Python..."
-pip3 install -r requirements.txt --user
+pip3 install -r requirements.txt --user --break-system-packages 2>/dev/null || pip3 install -r requirements.txt --user
 
 # Créer le fichier .env s'il n'existe pas
 if [ ! -f .env ]; then
     echo "[4/7] Création du fichier de configuration..."
     cp .env.example .env
 
-    # Générer un mot de passe aléatoire
-    RANDOM_PASSWORD=$(openssl rand -base64 12)
+    # Générer un mot de passe aléatoire (sans caractères spéciaux problématiques)
+    RANDOM_PASSWORD=$(openssl rand -base64 12 | tr -d '/+=' | cut -c1-16)
     sed -i "s/ADMIN_PASSWORD=admin/ADMIN_PASSWORD=$RANDOM_PASSWORD/" .env
 
-    # Générer une clé secrète aléatoire
-    RANDOM_SECRET=$(openssl rand -base64 32)
+    # Générer une clé secrète aléatoire (sans caractères spéciaux problématiques)
+    RANDOM_SECRET=$(openssl rand -base64 32 | tr -d '/+=' | cut -c1-32)
     sed -i "s/SECRET_KEY=.*/SECRET_KEY=$RANDOM_SECRET/" .env
 
     echo ""
